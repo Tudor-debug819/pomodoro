@@ -1,1 +1,15 @@
-<p>timer works!</p>
+<div class="session-message">
+  <h2>
+    {{ sessionMessage$ | async }}
+  </h2>
+</div>
+
+<div class="timer">
+  <h1>{{ (timeLeft$ | async) ?? 0 | timeFormat }}</h1>
+</div>
+
+<div class="controls">
+  <button (click)="onStart()">Start</button>
+  <button (click)="onPause()">Pause</button>
+  <button (click)="onReset()">Reset</button>
+</div>
