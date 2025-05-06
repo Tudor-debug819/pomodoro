@@ -40,4 +40,27 @@ export class TimerComponent {
     this.store.dispatch(resetTimer());
   }
 
+  isOnline = navigator.onLine;
+  showStatus = true;
+
+  ngOnInit(){
+    window.addEventListener('online',()=>{
+      this.isOnline = true;
+      this.showStatus = true;
+      this.autoHideStatus();
+    });
+
+    window.addEventListener('offline',()=>{
+      this.isOnline = false;
+      this.showStatus = true;
+      this.autoHideStatus();
+    });
+  }
+
+  autoHideStatus(){
+    setTimeout(()=>{
+      this.showStatus = false;
+    },5000);
+  }
+
 }

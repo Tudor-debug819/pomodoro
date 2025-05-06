@@ -3,6 +3,11 @@
     {{ sessionMessage$ | async }}
   </h2>
 </div>
+<div *ngIf="showStatus && !isOnline" class="offline-banner">
+  You are offline!
+</div>
+
+<div *ngIf="showStatus && isOnline" class="online-banner">You are online!</div>
 
 <div class="timer">
   <h1>{{ (timeLeft$ | async) ?? 0 | timeFormat }}</h1>
