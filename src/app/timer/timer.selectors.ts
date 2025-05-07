@@ -7,3 +7,6 @@ export const selectTimeLeft = createSelector(selectTimer, (state) => state.timeL
 export const selectIsRunning = createSelector(selectTimer, (state) => state.isRunning);
 export const selectIsWorkSession = createSelector(selectTimer, (state) => state.isWorkSession);
 export const selectSessionMessage = createSelector(selectIsWorkSession, (isWorkSession) => isWorkSession ? 'Work time!' : 'Break time!');
+
+export const selectWorkDuration = createSelector(selectTimer, (state) => state.workDurations);
+export const selectBreakDuration = createSelector(selectTimer, (state) => state.breakDuration);
