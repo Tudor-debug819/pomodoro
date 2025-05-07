@@ -7,9 +7,9 @@ export interface TimerState {
 }
 
 export const initialState: TimerState = {
-    workDurations: 25,
-    breakDuration: 5,
+    workDurations: 1,
+    breakDuration: 1,
     isRunning: false,
     isWorkSession: true,
-    timeLeft: 25 * 60,
+    timeLeft: 1 * 60,
 }

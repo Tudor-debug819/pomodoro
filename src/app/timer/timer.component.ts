@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { TimerService } from './timer.service';
 import { Store } from '@ngrx/store';
 import { pauseTimer, resetTimer, startTimer } from './timer.actions';
-import { Observable } from 'rxjs';
-import { selectSessionMessage, selectTimeLeft } from './timer.selectors';
+import { filter, Observable, pairwise, combineLatest } from 'rxjs';
+import { selectSessionMessage, selectTimeLeft, selectIsWorkSession, selectWorkDuration, selectBreakDuration } from './timer.selectors';
 import { AsyncPipe } from '@angular/common';
 import { TimeFormatPipe } from './time.pipe';
 import { CommonModule } from '@angular/common';
@@ -19,6 +19,8 @@ import { TimerState } from './timer.state';
 export class TimerComponent {
   timeLeft$: Observable<number>;
   sessionMessage$: Observable<string>;
+  circumference = 2* Math.PI*70;
+  isWorkSession = true;
 
   constructor(private timerService: TimerService, private store: Store<{ timer: TimerState }>) {
     this.timeLeft$ = this.store.select(selectTimeLeft);
@@ -38,6 +40,53 @@ export class TimerComponent {
   onReset() {
     this.timerService.stop();
     this.store.dispatch(resetTimer());
+  }
+
+  isOnline = navigator.onLine;
+  showStatus = true;
+  progressPercentage = 0;
+
+  ngOnInit(){
+    window.addEventListener('online',()=>{
+      this.isOnline = true;
+      this.showStatus = true;
+      this.autoHideStatus();
+    });
+
+    window.addEventListener('offline',()=>{
+      this.isOnline = false;
+      this.showStatus = true;
+      this.autoHideStatus();
+    });
+
+    this.timeLeft$.pipe(pairwise(),filter(([prev, curr])=>prev>0&&curr===0)).subscribe(()=>{
+      this.playAlarm();
+    })
+
+    combineLatest([
+      this.store.select(selectTimeLeft),
+      this.store.select(selectIsWorkSession),
+      this.store.select(selectWorkDuration),
+      this.store.select(selectBreakDuration)
+    ]).subscribe(([timeLeft, isWork, workMin, breakMin]) => {
+      const total = isWork ? workMin * 60 : breakMin * 60;
+      this.progressPercentage = 100 - (timeLeft / total) * 100;
+    });
+
+    this.store.select(selectIsWorkSession).subscribe(value=>{
+      this.isWorkSession = value;
+    });
+  }
+
+  autoHideStatus(){
+    setTimeout(()=>{
+      this.showStatus = false;
+    },5000);
+  }
+
+  playAlarm(){
+    const audio=new Audio('assets/alarm_tone.wav');
+    audio.play();
   }
 
 }

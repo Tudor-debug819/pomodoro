@@ -1,15 +1,48 @@
-<div class="session-message">
-  <h2>
-    {{ sessionMessage$ | async }}
-  </h2>
-</div>
+<div
+  [ngClass]="isWorkSession ? 'work-session' : 'break-session'"
+  class="session-container"
+>
+  <div class="session-message">
+    <h2>
+      {{ sessionMessage$ | async }}
+    </h2>
+  </div>
 
-<div class="timer">
-  <h1>{{ (timeLeft$ | async) ?? 0 | timeFormat }}</h1>
-</div>
+  <!-- <div class="progress-container">
+  <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+</div> -->
 
-<div class="controls">
-  <button (click)="onStart()">Start</button>
-  <button (click)="onPause()">Pause</button>
-  <button (click)="onReset()">Reset</button>
+  <div class="circle-wrapper">
+    <svg class="progress-circle" width="160" height="160">
+      <circle class="bg" cx="80" cy="80" r="70" />
+      <circle
+        class="progress"
+        cx="80"
+        cy="80"
+        r="70"
+        [attr.stroke-dashoffset]="
+          circumference - (progressPercentage / 100) * circumference
+        "
+        [attr.stroke-dasharray]="circumference"
+      />
+    </svg>
+  </div>
+
+  <div *ngIf="showStatus && !isOnline" class="offline-banner">
+    You are offline!
+  </div>
+
+  <div *ngIf="showStatus && isOnline" class="online-banner">
+    You are online!
+  </div>
+
+  <div class="timer">
+    <h1>{{ (timeLeft$ | async) ?? 0 | timeFormat }}</h1>
+  </div>
+
+  <div class="controls">
+    <button (click)="onStart()">Start</button>
+    <button (click)="onPause()">Pause</button>
+    <button (click)="onReset()">Reset</button>
+  </div>
 </div>

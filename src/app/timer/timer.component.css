@@ -41,3 +41,84 @@ button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.online-banner {
+  background-color: #d4edda;
+  color: #155724;
+  font-size: 14px;
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  text-align: center;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  max-width: 300px;
+}
+
+.offline-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  font-size: 14px;
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  text-align: center;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  max-width: 300px;
+}
+
+/* .progress-container {
+  width: 80%;
+  height: 12px;
+  background-color: #eee;
+  margin: 20px auto;
+  border-radius: 6px;
+  overflow: hidden;
+}
+ 
+.progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 1s linear;
+} */
+
+.circle-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+}
+
+.progress-circle {
+  transform: rotate(-90deg);
+}
+
+circle {
+  fill: none;
+  stroke-width: 12;
+}
+
+.bg {
+  stroke: #e6e6e6;
+}
+
+.progress {
+  stroke: #4caf50;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.session-container {
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 400px;
+  margin: 40px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.5s ease;
+}
+
+.work-session {
+  background-color: #e8f5e9; 
+}
+
+.break-session {
+  background-color: #e3f2fd; 
+}
