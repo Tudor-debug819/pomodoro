@@ -3,11 +3,11 @@ import { TimerService } from './timer.service';
 import { Store } from '@ngrx/store';
 import { pauseTimer, resetTimer, startTimer } from './timer.actions';
 import { filter, Observable, pairwise, combineLatest } from 'rxjs';
-import { selectSessionMessage, selectTimeLeft, selectIsWorkSession, selectWorkDuration, selectBreakDuration } from './timer.selectors';
+import { selectSessionMessage, selectTimeLeft, selectIsWorkSession, selectWorkDuration, selectBreakDuration, selectSessionHistory } from './timer.selectors';
 import { AsyncPipe } from '@angular/common';
 import { TimeFormatPipe } from './time.pipe';
 import { CommonModule } from '@angular/common';
-import { TimerState } from './timer.state';
+import { SessionHistoryEntry, TimerState } from './timer.state';
 
 @Component({
   selector: 'app-timer',
@@ -19,12 +19,14 @@ import { TimerState } from './timer.state';
 export class TimerComponent {
   timeLeft$: Observable<number>;
   sessionMessage$: Observable<string>;
-  circumference = 2* Math.PI*70;
+  circumference = 2 * Math.PI * 70;
   isWorkSession = true;
+  sessionHistory$: Observable<SessionHistoryEntry[]>;
 
   constructor(private timerService: TimerService, private store: Store<{ timer: TimerState }>) {
     this.timeLeft$ = this.store.select(selectTimeLeft);
     this.sessionMessage$ = this.store.select(selectSessionMessage);
+    this.sessionHistory$ = this.store.select(selectSessionHistory);
   }
 
   onStart() {
@@ -46,20 +48,25 @@ export class TimerComponent {
   showStatus = true;
   progressPercentage = 0;
 
-  ngOnInit(){
-    window.addEventListener('online',()=>{
+  ngOnInit() {
+    window.addEventListener('online', () => {
       this.isOnline = true;
       this.showStatus = true;
       this.autoHideStatus();
     });
 
-    window.addEventListener('offline',()=>{
+    window.addEventListener('offline', () => {
       this.isOnline = false;
       this.showStatus = true;
       this.autoHideStatus();
     });
 
-    this.timeLeft$.pipe(pairwise(),filter(([prev, curr])=>prev>0&&curr===0)).subscribe(()=>{
+    if (this.isOnline) {
+      this.autoHideStatus();
+    }
+
+
+    this.timeLeft$.pipe(pairwise(), filter(([prev, curr]) => prev > 0 && curr === 0)).subscribe(() => {
       this.playAlarm();
     })
 
@@ -73,19 +80,20 @@ export class TimerComponent {
       this.progressPercentage = 100 - (timeLeft / total) * 100;
     });
 
-    this.store.select(selectIsWorkSession).subscribe(value=>{
+    this.store.select(selectIsWorkSession).subscribe(value => {
       this.isWorkSession = value;
     });
+
   }
 
-  autoHideStatus(){
-    setTimeout(()=>{
+  autoHideStatus() {
+    setTimeout(() => {
       this.showStatus = false;
-    },5000);
+    }, 5000);
   }
 
-  playAlarm(){
-    const audio=new Audio('assets/alarm_tone.wav');
+  playAlarm() {
+    const audio = new Audio('assets/alarm_tone.wav');
     audio.play();
   }
 

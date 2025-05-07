@@ -45,4 +45,18 @@
     <button (click)="onPause()">Pause</button>
     <button (click)="onReset()">Reset</button>
   </div>
+
+  <div class="history">
+    <h3>Session History</h3>
+    <ul>
+      <li *ngFor="let entry of sessionHistory$ | async">
+        <span [ngClass]="entry.type">
+          {{ entry.type === "work" ? "Work" : "Break" }}
+        </span>
+        - {{ entry.duration / 60 | number : "1.0-0" }} min 
+        {{ entry.duration % 60 }} sec -
+        {{ entry.timestamp | date : "shortTime" }}
+      </li>
+    </ul>
+  </div>
 </div>

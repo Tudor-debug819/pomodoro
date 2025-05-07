@@ -10,3 +10,8 @@ export const selectSessionMessage = createSelector(selectIsWorkSession, (isWorkS
 
 export const selectWorkDuration = createSelector(selectTimer, (state) => state.workDurations);
 export const selectBreakDuration = createSelector(selectTimer, (state) => state.breakDuration);
+
+export const selectSessionHistory = createSelector(
+    selectTimer,
+    (state) => state.history || []
+);
