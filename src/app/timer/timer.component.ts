@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TimerService } from './timer.service';
 import { Store } from '@ngrx/store';
-import { pauseTimer, resetTimer, startTimer } from './timer.actions';
+import { pauseTimer, resetTimer, startTimer, setDurations } from './timer.actions';
 import { filter, Observable, pairwise, combineLatest } from 'rxjs';
 import { selectSessionMessage, selectTimeLeft, selectIsWorkSession, selectWorkDuration, selectBreakDuration, selectSessionHistory } from './timer.selectors';
 import { AsyncPipe } from '@angular/common';
@@ -22,6 +22,9 @@ export class TimerComponent {
   circumference = 2 * Math.PI * 70;
   isWorkSession = true;
   sessionHistory$: Observable<SessionHistoryEntry[]>;
+  showSettings = false;
+  workMinutes = 25;
+  breakMinutes = 5;
 
   constructor(private timerService: TimerService, private store: Store<{ timer: TimerState }>) {
     this.timeLeft$ = this.store.select(selectTimeLeft);
@@ -82,6 +85,7 @@ export class TimerComponent {
 
     this.store.select(selectIsWorkSession).subscribe(value => {
       this.isWorkSession = value;
+      this.updateBodyClass();
     });
 
   }
@@ -95,6 +99,31 @@ export class TimerComponent {
   playAlarm() {
     const audio = new Audio('assets/alarm_tone.wav');
     audio.play();
+  }
+
+  updateBodyClass() {
+    const body = document.body;
+    body.classList.remove('work-bg', 'break-bg');
+
+    body.classList.add(this.isWorkSession ? 'work-bg' : 'break-bg');
+  }
+
+  onWorkInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.workMinutes = +input.value;
+  }
+   
+  onBreakInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.breakMinutes = +input.value;
+  }
+
+  applySettings() {
+    this.store.dispatch(setDurations({
+      workDuration: this.workMinutes,
+      breakDuration: this.breakMinutes
+    }));
+    this.showSettings = false;
   }
 
 }

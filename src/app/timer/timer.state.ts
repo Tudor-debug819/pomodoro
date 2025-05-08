@@ -8,11 +8,11 @@ export interface TimerState {
 }
 
 export const initialState: TimerState = {
-    workDurations: 0.4,
-    breakDuration: 0.20,
+    workDurations: 25,
+    breakDuration: 5,
     isRunning: false,
     isWorkSession: true,
-    timeLeft: 0.4 * 60,
+    timeLeft: 25 * 60,
     history: JSON.parse(localStorage.getItem('pomodoroHistory') || '[]')
 }
 
