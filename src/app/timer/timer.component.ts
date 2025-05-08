@@ -52,6 +52,9 @@ export class TimerComponent {
   progressPercentage = 0;
 
   ngOnInit() {
+
+    Notification.requestPermission();
+
     window.addEventListener('online', () => {
       this.isOnline = true;
       this.showStatus = true;
@@ -71,6 +74,7 @@ export class TimerComponent {
 
     this.timeLeft$.pipe(pairwise(), filter(([prev, curr]) => prev > 0 && curr === 0)).subscribe(() => {
       this.playAlarm();
+      this.sendNotification(this.isWorkSession ? 'Take a brake! Grab a beer!' : 'Work time! Go back to studying!');
     })
 
     combineLatest([
@@ -87,6 +91,7 @@ export class TimerComponent {
       this.isWorkSession = value;
       this.updateBodyClass();
     });
+
 
   }
 
@@ -112,7 +117,7 @@ export class TimerComponent {
     const input = event.target as HTMLInputElement;
     this.workMinutes = +input.value;
   }
-   
+
   onBreakInput(event: Event) {
     const input = event.target as HTMLInputElement;
     this.breakMinutes = +input.value;
@@ -124,6 +129,15 @@ export class TimerComponent {
       breakDuration: this.breakMinutes
     }));
     this.showSettings = false;
+  }
+
+  sendNotification(message: string) {
+    if (Notification.permission === 'granted') {
+      new Notification('Pomodoro Timer', {
+        body: message,
+        icon: 'assets/icons/icon-192x192.png'
+      });
+    }
   }
 
 }
