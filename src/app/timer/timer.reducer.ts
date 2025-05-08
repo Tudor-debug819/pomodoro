@@ -1,6 +1,6 @@
 import { createReducer } from "@ngrx/store";
 import { initialState, SessionHistoryEntry } from "./timer.state";
-import { pauseTimer, resetTimer, startTimer, tick } from "./timer.actions";
+import { pauseTimer, resetTimer, startTimer, tick, setDurations } from "./timer.actions";
 import { on } from "@ngrx/store";
 
 export const timerReducer = createReducer(initialState,
@@ -36,4 +36,10 @@ export const timerReducer = createReducer(initialState,
       };
     }
   }),
+  on(setDurations, (state, { workDuration, breakDuration }) => ({
+    ...state,
+    workDurations: workDuration,
+    breakDuration: breakDuration,
+    timeLeft: state.isWorkSession ? workDuration * 60 : breakDuration * 60
+  }))
 );
