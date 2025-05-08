@@ -4,6 +4,8 @@ import { timerReducer } from './app/timer/timer.reducer';
 import { provideState, provideStore } from '@ngrx/store';
 import { isDevMode } from '@angular/core';
 import { provideServiceWorker } from '@angular/service-worker';
+import { initialState } from './app/timer/timer.state';
+import { environment } from './environment';
 
 bootstrapApplication(AppComponent, {
   providers: [
