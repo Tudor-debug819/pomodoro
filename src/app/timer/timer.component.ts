@@ -8,6 +8,7 @@ import { AsyncPipe } from '@angular/common';
 import { TimeFormatPipe } from './time.pipe';
 import { CommonModule } from '@angular/common';
 import { SessionHistoryEntry, TimerState } from './timer.state';
+import { FcmService } from '../fcm.service';
 
 @Component({
   selector: 'app-timer',
@@ -26,7 +27,7 @@ export class TimerComponent {
   workMinutes = 25;
   breakMinutes = 5;
 
-  constructor(private timerService: TimerService, private store: Store<{ timer: TimerState }>) {
+  constructor(private timerService: TimerService, private store: Store<{ timer: TimerState }>, private fcm: FcmService) {
     this.timeLeft$ = this.store.select(selectTimeLeft);
     this.sessionMessage$ = this.store.select(selectSessionMessage);
     this.sessionHistory$ = this.store.select(selectSessionHistory);
@@ -53,7 +54,8 @@ export class TimerComponent {
 
   ngOnInit() {
 
-    Notification.requestPermission();
+    this.fcm.requestPermission();
+    this.fcm.listen();
 
     window.addEventListener('online', () => {
       this.isOnline = true;
@@ -73,8 +75,20 @@ export class TimerComponent {
 
 
     this.timeLeft$.pipe(pairwise(), filter(([prev, curr]) => prev > 0 && curr === 0)).subscribe(() => {
+      const wasWorkSession = this.isWorkSession;
       this.playAlarm();
-      this.sendNotification(this.isWorkSession ? 'Take a brake! Grab a beer!' : 'Work time! Go back to studying!');
+
+      const message = wasWorkSession
+        ? 'Pauză! Bea o bere.'
+        : 'Gata pauza! Inapoi la lucru.';
+
+      console.log('sending notification', message);
+
+
+      new Notification('Pomodoro Timer', {
+        body: message,
+      });
+
     })
 
     combineLatest([
@@ -131,13 +145,5 @@ export class TimerComponent {
     this.showSettings = false;
   }
 
-  sendNotification(message: string) {
-    if (Notification.permission === 'granted') {
-      new Notification('Pomodoro Timer', {
-        body: message,
-        icon: 'assets/icons/icon-192x192.png'
-      });
-    }
-  }
 
 }
