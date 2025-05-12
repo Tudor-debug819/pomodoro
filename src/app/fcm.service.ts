@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
 import { Messaging, getToken, onMessage } from '@angular/fire/messaging';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../environment';
+import { Injectable } from '@angular/core';
  
 @Injectable({ providedIn: 'root' })
 export class FcmService {

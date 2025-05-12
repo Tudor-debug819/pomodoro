@@ -8,10 +8,15 @@ export const timerReducer = createReducer(initialState,
   on(pauseTimer, (state) => ({ ...state, isRunning: false })),
   on(resetTimer, (state) => ({ ...state, isRunning: false, timeLeft: state.isWorkSession ? state.workDurations * 60 : state.breakDuration * 60 })),
   on(tick, (state) => {
-    if (state.timeLeft > 0) {
+    if (state.timeLeft > 1) {
       return {
         ...state,
         timeLeft: state.timeLeft - 1,
+      };
+    } else if (state.timeLeft === 1) {
+      return {
+        ...state,
+        timeLeft: 0,
       };
     } else {
       const isNowWorkSession = !state.isWorkSession;
@@ -21,8 +26,10 @@ export const timerReducer = createReducer(initialState,
 
       const historyEntry: SessionHistoryEntry = {
         type: state.isWorkSession ? 'work' : 'break',
-        duration: state.isWorkSession ? state.workDurations * 60 : state.breakDuration * 60,
-        timestamp: new Date().toISOString()
+        duration: state.isWorkSession
+          ? state.workDurations * 60
+          : state.breakDuration * 60,
+        timestamp: new Date().toISOString(),
       };
 
       const updatedHistory = [...state.history, historyEntry];
@@ -32,7 +39,7 @@ export const timerReducer = createReducer(initialState,
         ...state,
         isWorkSession: isNowWorkSession,
         timeLeft: newTimeLeft,
-        history: updatedHistory
+        history: updatedHistory,
       };
     }
   }),
